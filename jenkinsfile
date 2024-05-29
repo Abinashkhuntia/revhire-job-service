@@ -13,14 +13,13 @@ pipeline {
         
         stage('Building the User Service image') {
             steps {
-                dependencies {
-                    build('Building the Infrastructure')
-                }
                 script {
-                    echo "Building the User Service"
-                    sh "docker build -t ${revhire_job_service} ."
-                    sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112742532.dkr.ecr.us-east-1.amazonaws.com"
-                    sh "docker push ${revhire_job_service}"
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        echo "Building the User Service"
+                        sh "docker build -t ${revhire_job_service} ."
+                        sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112742532.dkr.ecr.us-east-1.amazonaws.com"
+                        sh "docker push ${revhire_job_service}"
+                    }
                 }
             }
         }
@@ -29,11 +28,13 @@ pipeline {
             steps {
                 script {
                     echo "Deploying the User Service"
-                    sh "kubectl apply -f /manifests/deployment.yaml"
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh "aws eks --region us-east-1 update-kubeconfig --name my-cluster"
+                        sh "kubectl apply -f /manifests/deployment.yaml"
+
+                    }
                 }
             }
         }
-
-       
     } 
 }
