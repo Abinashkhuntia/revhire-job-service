@@ -10,19 +10,6 @@ pipeline {
                 url: 'https://github.com/Abinashkhuntia/revhire-project-2.git'
             }
         }
-        stage('checking pre-requisites') {
-            steps {
-                script {
-                    sh "git --version"
-                    sh "kubectl version"
-                    sh "docker --version"
-                    sh "terraform --version"
-                    sh "npm --version"
-                    sh "nodejs --version"
-                    ng "ng --version"
-                }
-            }
-        }
         
         stage('Building the User Service image') {
             steps {
@@ -31,8 +18,8 @@ pipeline {
                 }
                 script {
                     echo "Building the User Service"
-                    sh "cd ../revhire-job-service"
                     sh "docker build -t ${revhire-job-service} ."
+                    sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112742532.dkr.ecr.us-east-1.amazonaws.com"
                     sh "docker push ${revhire-job-service}"
                 }
             }
@@ -42,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo "Deploying the User Service"
-                    sh "kubectl apply -f ../revhire-job-service/manifests/deployment.yaml"
+                    sh "kubectl apply -f /manifests/deployment.yaml"
                 }
             }
         }
