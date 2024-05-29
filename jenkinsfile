@@ -1,6 +1,6 @@
 pipeline { 
     environment {
-        revhire-job-service= '471112742532.dkr.ecr.us-east-1.amazonaws.com/revhire-job-service-repo:latest'
+        revhire_job_service= '471112742532.dkr.ecr.us-east-1.amazonaws.com/revhire-job-service-repo:latest'
     }
     agent any 
     stages {
@@ -18,9 +18,9 @@ pipeline {
                 }
                 script {
                     echo "Building the User Service"
-                    sh "docker build -t ${revhire-job-service} ."
+                    sh "docker build -t ${revhire_job_service} ."
                     sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112742532.dkr.ecr.us-east-1.amazonaws.com"
-                    sh "docker push ${revhire-job-service}"
+                    sh "docker push ${revhire_job_service}"
                 }
             }
         }
