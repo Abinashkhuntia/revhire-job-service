@@ -30,7 +30,7 @@ pipeline {
                     echo "Deploying the User Service"
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh "aws eks --region us-east-1 update-kubeconfig --name my-cluster"
-                        sh "kubectl apply -f /manifests/deployment.yaml"
+                        sh "kubectl apply -f manifests/deployment.yaml"
 
                     }
                 }
