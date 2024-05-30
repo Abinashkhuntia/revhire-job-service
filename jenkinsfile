@@ -19,6 +19,8 @@ pipeline {
                         sh "docker build -t ${revhire_job_service} ."
                         sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471112742532.dkr.ecr.us-east-1.amazonaws.com"
                         sh "docker push ${revhire_job_service}"
+                        sh "docker rmi $(docker images -a -q)"
+
                     }
                 }
             }
